@@ -10,9 +10,28 @@ const p = path.join(
 const getProductsFromFile = cb => {
   fs.readFile(p, (err, fileContent) => {
     if (err) {
-      cb([]);
+      if (err.code === 'ENOENT') {
+        
+        return cb([]);
+      }
+     
+      console.error('Error reading file:', err);
+      return cb([]);
     } else {
-      cb(JSON.parse(fileContent));
+      try {
+        const products = JSON.parse(fileContent);
+        // Check if it's an array
+        if (Array.isArray(products)) {
+          cb(products);
+        } else {
+          console.error('Invalid JSON content. Expected an array.');
+          cb([]);
+        }
+      } catch (jsonError) {
+        
+        console.error('Error parsing JSON:', jsonError);
+        cb([]);
+      }
     }
   });
 };
@@ -30,7 +49,9 @@ module.exports = class Product {
     getProductsFromFile(products => {
       products.push(this);
       fs.writeFile(p, JSON.stringify(products), err => {
-        console.log(err);
+        if (err) {
+          console.error('Error writing to file:', err);
+        }
       });
     });
   }
