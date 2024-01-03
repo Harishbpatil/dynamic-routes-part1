@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const errorController = require("./controllers/error");
+const db = require("./util/database");
 
 const app = express();
 
@@ -10,6 +11,9 @@ app.set("views", "views");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+
+db.execute("SELECT * FROM products").then();
+
 const deleteRoutes = require("./routes/delete");
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -22,5 +26,5 @@ app.use("/delete", deleteRoutes);
 app.use(errorController.get404);
 
 app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+  console.log("Server is running on port 3000");
 });
