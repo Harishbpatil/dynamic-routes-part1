@@ -28,8 +28,8 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(([product]) => {
+  Product.findByPk(prodId) // Use findByPk instead of findById
+    .then((product) => {
       if (!product) {
         return res.redirect("/");
       }
@@ -37,7 +37,7 @@ exports.getEditProduct = (req, res, next) => {
         pageTitle: "Edit Product",
         path: "/admin/edit-product",
         editing: editMode,
-        product: product[0],
+        product: product,
       });
     })
     .catch((err) => console.log(err));
@@ -65,10 +65,10 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  Product.findAll() // Use findAll instead of fetchAll
+    .then((products) => {
       res.render("admin/products", {
-        prods: rows,
+        prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
       });
@@ -79,7 +79,7 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = async (req, res, next) => {
   try {
     const prodId = req.params.productId;
-    await Product.deleteById(prodId);
+    await Product.destroy({ where: { id: prodId } }); // Use destroy instead of deleteById
     console.log("Product deleted successfully");
     res.redirect("/admin/products");
   } catch (err) {
